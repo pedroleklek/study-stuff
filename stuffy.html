@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stuffy - Study Questions</title>
+
+<style>
+
+body{
+margin:0;
+font-family:Arial, Helvetica, sans-serif;
+background:#050505;
+color:#e6e6e6;
+}
+
+.header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:10px 20px;
+background:#000000;
+border-bottom:1px solid #111;
+}
+
+.logo{
+font-weight:bold;
+font-size:24px;
+color:#ff0000;
+}
+
+.search{
+width:35%;
+padding:8px;
+border-radius:20px;
+border:none;
+background:#111;
+color:white;
+}
+
+.container{
+display:flex;
+}
+
+.sidebar{
+width:220px;
+background:#070707;
+height:calc(100vh - 50px);
+padding:10px;
+border-right:1px solid #111;
+}
+
+.sidebar button{
+display:block;
+width:100%;
+margin-bottom:10px;
+padding:10px;
+background:#111;
+border:none;
+color:white;
+border-radius:6px;
+cursor:pointer;
+}
+
+.sidebar button:hover{
+background:#1b1b1b;
+}
+
+.feed{
+flex:1;
+padding:20px;
+max-width:700px;
+}
+
+.post{
+background:#0b0b0b;
+border:1px solid #1c1c1c;
+border-radius:10px;
+padding:15px;
+margin-bottom:20px;
+}
+
+.post-title{
+font-size:18px;
+margin-bottom:10px;
+}
+
+.post-actions button{
+margin-right:10px;
+background:#141414;
+border:none;
+color:white;
+padding:6px 10px;
+border-radius:6px;
+}
+
+.rightbar{
+width:260px;
+padding:20px;
+}
+
+.community{
+background:#0b0b0b;
+border:1px solid #1c1c1c;
+border-radius:10px;
+padding:10px;
+margin-bottom:10px;
+}
+
+.commentBox{
+margin-top:10px;
+}
+
+.comment{
+background:#111;
+padding:6px;
+border-radius:6px;
+margin-top:5px;
+font-size:14px;
+}
+
+input,textarea,select{
+background:#111;
+color:white;
+border:none;
+border-radius:6px;
+padding:8px;
+width:100%;
+margin-top:6px;
+}
+
+.askBox{
+background:#0b0b0b;
+border:1px solid #1c1c1c;
+border-radius:10px;
+padding:15px;
+margin-bottom:20px;
+}
+
+button{
+cursor:pointer;
+}
+
+.hidden{
+display:none;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<div class="logo">STUFFY</div>
+<input class="search" placeholder="Search questions..." oninput="searchPosts(this.value)">
+</div>
+
+<div class="container">
+
+<div class="sidebar">
+<button onclick="filterPosts('home')">Home</button>
+<button onclick="filterPosts('math')">Math</button>
+<button onclick="filterPosts('geography')">Geography</button>
+<button onclick="filterPosts('science')">Science</button>
+<button onclick="filterPosts('history')">History</button>
+</div>
+
+<div class="feed" id="feed">
+
+<div class="askBox">
+<b>Ask a Question</b>
+<textarea id="questionText" placeholder="Write your school question..."></textarea>
+<select id="questionCategory">
+<option value="math">Math</option>
+<option value="geography">Geography</option>
+<option value="science">Science</option>
+<option value="history">History</option>
+</select>
+<button onclick="createPost()">Post Question</button>
+</div>
+
+<div class="post" data-category="math">
+<div class="post-title">How do you solve a quadratic equation?</div>
+<p>I don't understand the formula used in math class.</p>
+<div class="post-actions">
+<button onclick="like(this)">⬆️ <span>0</span></button>
+<button onclick="toggleComment(this)">💬 Comment</button>
+</div>
+<div class="commentBox"></div>
+</div>
+
+<div class="post" data-category="geography">
+<div class="post-title">What causes earthquakes?</div>
+<p>My geography teacher talked about tectonic plates but I'm confused.</p>
+<div class="post-actions">
+<button onclick="like(this)">⬆️ <span>0</span></button>
+<button onclick="toggleComment(this)">💬 Comment</button>
+</div>
+<div class="commentBox"></div>
+</div>
+
+<div class="post" data-category="science">
+<div class="post-title">What is photosynthesis?</div>
+<p>Can someone explain it in a simple way?</p>
+<div class="post-actions">
+<button onclick="like(this)">⬆️ <span>0</span></button>
+<button onclick="toggleComment(this)">💬 Comment</button>
+</div>
+<div class="commentBox"></div>
+</div>
+
+<div class="post" data-category="history">
+<div class="post-title">Why did World War I start?</div>
+<p>I need help understanding the causes.</p>
+<div class="post-actions">
+<button onclick="like(this)">⬆️ <span>0</span></button>
+<button onclick="toggleComment(this)">💬 Comment</button>
+</div>
+<div class="commentBox"></div>
+</div>
+
+</div>
+
+<div class="rightbar">
+<div class="community">Popular Subjects</div>
+<div class="community">Math Help</div>
+<div class="community">Geography Questions</div>
+<div class="community">Science Study</div>
+<div class="community">History Discussion</div>
+</div>
+
+</div>
+
+<script>
+
+function like(btn){
+let span=btn.querySelector("span")
+span.innerText=parseInt(span.innerText)+1
+}
+
+function toggleComment(btn){
+const post=btn.closest(".post")
+let box=post.querySelector(".commentInput")
+
+if(box){box.remove();return}
+
+box=document.createElement("input")
+box.placeholder="Write a comment and press Enter"
+box.className="commentInput"
+
+box.addEventListener("keypress",function(e){
+if(e.key==='Enter'){
+const div=document.createElement("div")
+div.className="comment"
+
+div.innerText="User: "+box.value
+
+post.querySelector(".commentBox").appendChild(div)
+box.value=""
+}
+})
+
+post.appendChild(box)
+}
+
+function createPost(){
+
+const text=document.getElementById("questionText").value
+const cat=document.getElementById("questionCategory").value
+
+if(text.trim()==="") return
+
+const post=document.createElement("div")
+post.className="post"
+post.dataset.category=cat
+
+post.innerHTML=`
+<div class="post-title">${text}</div>
+<p>Question posted by user</p>
+<div class="post-actions">
+<button onclick="like(this)">⬆️ <span>0</span></button>
+<button onclick="toggleComment(this)">💬 Comment</button>
+</div>
+<div class="commentBox"></div>
+`
+
+document.getElementById("feed").appendChild(post)
+
+document.getElementById("questionText").value=""
+}
+
+function filterPosts(category){
+const posts=document.querySelectorAll('.post')
+posts.forEach(p=>{
+if(category==='home'){p.classList.remove('hidden');return}
+if(p.dataset.category===category){p.classList.remove('hidden')}
+else{p.classList.add('hidden')}
+})
+}
+
+function searchPosts(text){
+const posts=document.querySelectorAll('.post')
+posts.forEach(p=>{
+if(p.innerText.toLowerCase().includes(text.toLowerCase())){
+p.classList.remove('hidden')
+}else{
+p.classList.add('hidden')
+}
+})
+}
+
+</script>
+
+</body>
+</html>
